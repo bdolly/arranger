@@ -15,7 +15,7 @@ div {
 
 .ReactTable .rt-tbody .rt-td {
   font-family: sans-serif;
-  border-right: 1px solid [_[primaryColor]_];
+  border-right: 1px solid #cacbcf;
 }
 
 .ReactTable .rt-tbody .rt-td :first-child {
@@ -26,12 +26,12 @@ div {
   font-weight: bolder;
   padding-top: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid [_[primaryColor]_];
-  border-right: 1px solid [_[primaryColor]_];
+  border-bottom: 1px solid #cacbcf;
+  border-right: 1px solid #cacbcf;
 }
 
 .ReactTable .rt-resizable-header-content {
-  color: #404c9a;
+  color: [_[primaryColor]_];
 }
 
 .ReactTable .rt-thead {
@@ -46,7 +46,7 @@ div {
   height: 64px;
 }
 .ReactTable .-pagination .-pageJump {
-  border: solid 1px [_[primaryColor]_];
+  border: solid 1px #cacbcf;
   border-radius: 10px;
   height: 30px;
   display: flex;
@@ -57,7 +57,7 @@ div {
   align-items: center;
   cursor: pointer;
   color: #74757d;
-  border-right: solid 1px [_[primaryColor]_];
+  border-right: solid 1px #cacbcf;
   min-width: 34px;
   padding-left: 0px;
   padding-right: 0px;
