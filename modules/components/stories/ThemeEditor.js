@@ -51,7 +51,7 @@ const ThemeSelector = ({ availableTheme, selectedThemeId, onThemeChange }) => (
 );
 
 class ThemeProvider extends React.Component {
-  componentDidMount = () => (
+  componentDidMount = () => {
     this.renderStyle(this.props.currentTheme)
   }
   componentWillReceiveProps = (nextProps) => {
