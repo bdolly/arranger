@@ -9,6 +9,7 @@ import Arranger, {
   Table,
 } from '../src/Arranger';
 import State from '../src/State';
+import LiveAdvancedFacetView from '../src/AdvancedFacetView/LiveAdvancedFacetView';
 import { StyleProvider, AVAILABLE_THEMES } from '../src/ThemeSwitcher';
 import {
   PORTAL_NAME,
@@ -27,7 +28,7 @@ injectGlobal`
   }
 `;
 
-const DemoHeader = ({ update }) => {
+const DemoHeader = ({ update, onAllFiltersClick }) => {
   return (
     <div
       css={`
@@ -46,6 +47,9 @@ const DemoHeader = ({ update }) => {
         process.env.STORYBOOK_PORTAL_NAME ||
         'Data Portal'}{' '}
       Search Page
+      <button style={{ marginLeft: 10 }} onClick={onAllFiltersClick}>
+        All Filters
+      </button>
       <div
         css={`
           margin-left: auto;
@@ -136,6 +140,36 @@ const Portal = ({ style, ...props }) => {
   );
 };
 
+const STYLE = {
+  ADVANCED_FACET_OVERLAY: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  ADVANCED_FACET_CONTAINER: {
+    width: 1000,
+    height: 800,
+    position: 'relative',
+    background: 'white',
+    borderRadius: 5,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  ADVANCED_FACET_TITLE: {
+    marginLeft: 20,
+    marginTop: 20,
+    borderBottom: 'solid 1px #d4d6dd',
+    paddingBottom: 10,
+    marginRight: 20,
+  },
+};
 storiesOf('Portal', module).add('Portal', () => (
   <>
     <StyleProvider selected="beagle" availableThemes={AVAILABLE_THEMES} />
@@ -143,21 +177,58 @@ storiesOf('Portal', module).add('Portal', () => (
       initial={{
         index: ACTIVE_INDEX,
         projectId: ACTIVE_PROJECT,
+        showAdvancedFacets: false,
       }}
-      render={({ index, projectId, update }) => {
+      render={({ index, projectId, update, showAdvancedFacets }) => {
         return index && projectId ? (
-          <Arranger
-            index={index}
-            projectId={projectId}
-            render={props => {
-              return (
-                <>
-                  <DemoHeader update={update} />
-                  <Portal {...props} />
-                </>
-              );
-            }}
-          />
+          <>
+            <Arranger
+              index={index}
+              projectId={projectId}
+              render={props => {
+                return (
+                  <>
+                    <DemoHeader
+                      update={update}
+                      onAllFiltersClick={() =>
+                        update({ showAdvancedFacets: true })
+                      }
+                    />
+                    <Portal {...props} />
+                    {showAdvancedFacets && (
+                      <div style={STYLE.ADVANCED_FACET_OVERLAY}>
+                        <div style={STYLE.ADVANCED_FACET_CONTAINER}>
+                          <div style={STYLE.ADVANCED_FACET_TITLE}>
+                            All filters
+                            <button
+                              style={{ marginLeft: 10 }}
+                              onClick={() =>
+                                update({ showAdvancedFacets: false })
+                              }
+                            >
+                              Close
+                            </button>
+                          </div>
+                          <div style={{ position: 'relative', flex: 1 }}>
+                            <LiveAdvancedFacetView
+                              {...{
+                                PROJECT_ID: ACTIVE_PROJECT,
+                                ES_INDEX: ACTIVE_INDEX,
+                                API_HOST: 'http://localhost:5050',
+                                ES_HOST: 'http://localhost:9200',
+                                sqon: props.sqon,
+                                onSqonChange: ({ sqon }) => console.log(sqon),
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              }}
+            />
+          </>
         ) : (
           <GetProjects
             render={props => (
