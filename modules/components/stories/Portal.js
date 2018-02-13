@@ -156,6 +156,7 @@ const Portal = ({ style, ...props }) => {
                 sqon: props.sqon,
                 closeModal: () => update({ advancedFacetShown: false }),
                 onSqonSubmit: sqon => props.setSQON(sqon),
+                // onSqonChange: sqon => props.setSQON(sqon),
               }}
             />
           )}
@@ -218,7 +219,8 @@ const AdvancedFacetViewModal = ({
   closeModal,
   showAdvancedFacets,
   sqon,
-  onSqonSubmit,
+  onSqonSubmit = () => {},
+  onSqonChange = () => {},
 }) => (
   <State
     initial={{ localSqon: sqon }}
@@ -244,7 +246,10 @@ const AdvancedFacetViewModal = ({
                   API_HOST: API,
                   ES_HOST: ES_HOST,
                   sqon: localSqon,
-                  onSqonChange: ({ sqon }) => update({ localSqon: sqon }),
+                  onSqonChange: ({ sqon }) => {
+                    update({ localSqon: sqon });
+                    onSqonChange(sqon);
+                  },
                 }}
               />
             </div>
