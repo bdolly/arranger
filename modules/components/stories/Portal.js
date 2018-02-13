@@ -172,6 +172,35 @@ const STYLE = {
     marginRight: 20,
   },
 };
+
+const AdvancedFacetViewModal = ({ update, showAdvancedFacets, sqon }) => (
+  <div style={STYLE.ADVANCED_FACET_OVERLAY}>
+    <div style={STYLE.ADVANCED_FACET_CONTAINER}>
+      <div style={STYLE.ADVANCED_FACET_TITLE}>
+        All filters
+        <button
+          style={{ marginLeft: 10 }}
+          onClick={() => update({ showAdvancedFacets: false })}
+        >
+          Close
+        </button>
+      </div>
+      <div style={{ position: 'relative', flex: 1 }}>
+        <LiveAdvancedFacetView
+          {...{
+            PROJECT_ID: ACTIVE_PROJECT,
+            ES_INDEX: ACTIVE_INDEX,
+            API_HOST: API,
+            ES_HOST: ES_HOST,
+            sqon: sqon,
+            onSqonChange: ({ sqon }) => console.log(sqon),
+          }}
+        />
+      </div>
+    </div>
+  </div>
+);
+
 storiesOf('Portal', module).add('Portal', () => (
   <>
     <StyleProvider selected="beagle" availableThemes={AVAILABLE_THEMES} />
@@ -198,33 +227,9 @@ storiesOf('Portal', module).add('Portal', () => (
                     />
                     <Portal {...props} />
                     {showAdvancedFacets && (
-                      <div style={STYLE.ADVANCED_FACET_OVERLAY}>
-                        <div style={STYLE.ADVANCED_FACET_CONTAINER}>
-                          <div style={STYLE.ADVANCED_FACET_TITLE}>
-                            All filters
-                            <button
-                              style={{ marginLeft: 10 }}
-                              onClick={() =>
-                                update({ showAdvancedFacets: false })
-                              }
-                            >
-                              Close
-                            </button>
-                          </div>
-                          <div style={{ position: 'relative', flex: 1 }}>
-                            <LiveAdvancedFacetView
-                              {...{
-                                PROJECT_ID: ACTIVE_PROJECT,
-                                ES_INDEX: ACTIVE_INDEX,
-                                API_HOST: API,
-                                ES_HOST: ES_HOST,
-                                sqon: props.sqon,
-                                onSqonChange: ({ sqon }) => console.log(sqon),
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
+                      <AdvancedFacetViewModal
+                        {...{ update, showAdvancedFacets, sqon: null }}
+                      />
                     )}
                   </>
                 );
