@@ -17,6 +17,8 @@ import {
   ACTIVE_PROJECT,
   deleteValue,
   setValue,
+  API,
+  ES_HOST,
 } from '../src/utils/config';
 
 injectGlobal`
@@ -214,8 +216,8 @@ storiesOf('Portal', module).add('Portal', () => (
                               {...{
                                 PROJECT_ID: ACTIVE_PROJECT,
                                 ES_INDEX: ACTIVE_INDEX,
-                                API_HOST: 'http://localhost:5050',
-                                ES_HOST: 'http://localhost:9200',
+                                API_HOST: API,
+                                ES_HOST: ES_HOST,
                                 sqon: props.sqon,
                                 onSqonChange: ({ sqon }) => console.log(sqon),
                               }}
