@@ -20,6 +20,7 @@ import {
   API,
   ES_HOST,
 } from '../src/utils/config';
+import { Bubble } from '../src/SQONView';
 
 injectGlobal`
   html,
@@ -30,7 +31,7 @@ injectGlobal`
   }
 `;
 
-const DemoHeader = ({ update, onAllFiltersClick }) => {
+const DemoHeader = ({ update }) => {
   return (
     <div
       css={`
@@ -49,9 +50,6 @@ const DemoHeader = ({ update, onAllFiltersClick }) => {
         process.env.STORYBOOK_PORTAL_NAME ||
         'Data Portal'}{' '}
       Search Page
-      <button style={{ marginLeft: 10 }} onClick={onAllFiltersClick}>
-        All Filters
-      </button>
       <div
         css={`
           margin-left: auto;
@@ -125,20 +123,45 @@ const ChooseProject = ({ index, projectId, update, projects }) => {
 
 const Portal = ({ style, ...props }) => {
   return (
-    <div style={{ display: 'flex', ...style }}>
-      <Aggregations {...props} />
-      <div
-        css={`
-          position: relative;
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
-        `}
-      >
-        <CurrentSQON {...props} />
-        <Table {...props} />
-      </div>
-    </div>
+    <State
+      initial={{ advancedFacetShown: true }}
+      render={({ update, advancedFacetShown }) => (
+        <div
+          className="portal"
+          style={{ position: 'relative', display: 'flex', ...style }}
+        >
+          <div className="leftPanel">
+            <div className="titleWrapper">
+              Filters
+              <button onClick={() => update({ advancedFacetShown: true })}>
+                ALL FILTERS
+              </button>
+            </div>
+            <Aggregations {...props} />
+          </div>
+          <div
+            css={`
+              position: relative;
+              flex-grow: 1;
+              display: flex;
+              flex-direction: column;
+            `}
+          >
+            <CurrentSQON {...props} />
+            <Table {...props} />
+          </div>
+          {advancedFacetShown && (
+            <AdvancedFacetViewModal
+              {...{
+                sqon: props.sqon,
+                closeModal: () => update({ advancedFacetShown: false }),
+                onSqonSubmit: sqon => props.setSQON(sqon),
+              }}
+            />
+          )}
+        </div>
+      )}
+    />
   );
 };
 
@@ -157,12 +180,17 @@ const STYLE = {
   },
   ADVANCED_FACET_CONTAINER: {
     width: 1000,
-    height: 800,
+    height: 720,
     position: 'relative',
     background: 'white',
     borderRadius: 5,
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden',
+  },
+  ADVANCED_FACET_WRAPPER: {
+    padding: 20,
+    paddingBottom: 0,
   },
   ADVANCED_FACET_TITLE: {
     marginLeft: 20,
@@ -170,35 +198,78 @@ const STYLE = {
     borderBottom: 'solid 1px #d4d6dd',
     paddingBottom: 10,
     marginRight: 20,
+    fontFamily: 'Montserrat',
+    textAlign: 'left',
+    color: '#2b388f',
+  },
+  ADVANCED_FACET_FOOTER: {
+    height: 67,
+    backgroundColor: '#edeef1',
+    boxShadow: '0 0 2.9px 0.1px #a0a0a3',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 1,
+    padding: 20,
   },
 };
 
-const AdvancedFacetViewModal = ({ update, showAdvancedFacets, sqon }) => (
-  <div style={STYLE.ADVANCED_FACET_OVERLAY}>
-    <div style={STYLE.ADVANCED_FACET_CONTAINER}>
-      <div style={STYLE.ADVANCED_FACET_TITLE}>
-        All filters
-        <button
-          style={{ marginLeft: 10 }}
-          onClick={() => update({ showAdvancedFacets: false })}
+const AdvancedFacetViewModal = ({
+  closeModal,
+  showAdvancedFacets,
+  sqon,
+  onSqonSubmit,
+}) => (
+  <State
+    initial={{ localSqon: sqon }}
+    render={({ update, localSqon }) => (
+      <div style={STYLE.ADVANCED_FACET_OVERLAY} onClick={() => closeModal()}>
+        <div
+          style={STYLE.ADVANCED_FACET_CONTAINER}
+          onClick={e => e.stopPropagation()}
         >
-          Close
-        </button>
+          <div style={STYLE.ADVANCED_FACET_TITLE}>All filters</div>
+          <div
+            style={{
+              ...STYLE.ADVANCED_FACET_WRAPPER,
+              flex: 1,
+              display: 'flex',
+            }}
+          >
+            <div style={{ position: 'relative', flex: 1 }}>
+              <LiveAdvancedFacetView
+                {...{
+                  PROJECT_ID: ACTIVE_PROJECT,
+                  ES_INDEX: ACTIVE_INDEX,
+                  API_HOST: API,
+                  ES_HOST: ES_HOST,
+                  sqon: localSqon,
+                  onSqonChange: ({ sqon }) => update({ localSqon: sqon }),
+                }}
+              />
+            </div>
+          </div>
+          <div style={STYLE.ADVANCED_FACET_FOOTER}>
+            <div className="cancel" onClick={e => closeModal()}>
+              Cancel
+            </div>
+            {/* <div>Fancy Stats</div> */}
+            <div>
+              <div
+                onClick={e => {
+                  onSqonSubmit(localSqon);
+                  closeModal();
+                }}
+                className="submitButton"
+              >
+                View Results
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style={{ position: 'relative', flex: 1 }}>
-        <LiveAdvancedFacetView
-          {...{
-            PROJECT_ID: ACTIVE_PROJECT,
-            ES_INDEX: ACTIVE_INDEX,
-            API_HOST: API,
-            ES_HOST: ES_HOST,
-            sqon: sqon,
-            onSqonChange: ({ sqon }) => console.log(sqon),
-          }}
-        />
-      </div>
-    </div>
-  </div>
+    )}
+  />
 );
 
 storiesOf('Portal', module).add('Portal', () => (
@@ -208,9 +279,8 @@ storiesOf('Portal', module).add('Portal', () => (
       initial={{
         index: ACTIVE_INDEX,
         projectId: ACTIVE_PROJECT,
-        showAdvancedFacets: false,
       }}
-      render={({ index, projectId, update, showAdvancedFacets }) => {
+      render={({ index, projectId, update }) => {
         return index && projectId ? (
           <>
             <Arranger
@@ -219,18 +289,8 @@ storiesOf('Portal', module).add('Portal', () => (
               render={props => {
                 return (
                   <>
-                    <DemoHeader
-                      update={update}
-                      onAllFiltersClick={() =>
-                        update({ showAdvancedFacets: true })
-                      }
-                    />
+                    <DemoHeader update={update} />
                     <Portal {...props} />
-                    {showAdvancedFacets && (
-                      <AdvancedFacetViewModal
-                        {...{ update, showAdvancedFacets, sqon: null }}
-                      />
-                    )}
                   </>
                 );
               }}

@@ -400,7 +400,7 @@ div {
 /**** styling for the Advanced Facet View ****/
 /*********************************************/
 .advancedFacetViewWrapper {
-  padding: 15px;
+  /* padding: 15px; */
 }
 .advancedFacetViewWrapper .facetViewWrapper {
   margin-top: 15px;
@@ -544,4 +544,45 @@ div {
 }
 .input-range__track.input-range__track--active {
   background-color: #009bb8;
+}
+
+/*********************************************/
+/******** styling for the Portal *************/
+/*********************************************/
+.portal .leftPanel {
+  background: #f4f5f8;
+}
+.portal .leftPanel .titleWrapper {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.portal .leftPanel button {
+  border-radius: 10.5px;
+  background-color: #ffffff;
+  border: solid 1px #cacbcf;
+}
+
+/*********************************************************/
+/******** styling for the Advanced Facet View Modal ******/
+/*********************************************************/
+.submitButton {
+  border-radius: 100px;
+  background-color: #009bb8;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.86;
+  letter-spacing: 0.2px;
+  text-align: center;
+  color: #ffffff;
+  padding: 10px 31px;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.cancel {
+  font-family: Montserrat;
+  text-align: center;
+  color: #009bb8;
+  cursor: pointer;
 }
