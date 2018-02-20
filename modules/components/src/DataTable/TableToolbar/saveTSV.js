@@ -1,6 +1,7 @@
 import { get, flatten } from 'lodash';
 import { createWriteStream, supported } from 'streamsaver';
 import { saveAs } from 'file-saver';
+import Tar from 'tar-js';
 
 import { getAllValue } from '../utils';
 
@@ -20,14 +21,21 @@ function streamMethods(fileName) {
   };
 }
 
-function noStreamMethods(fileName) {
+function noStreamMethods(fileName, tar) {
   let data = '';
   return {
     onData: chunk => {
       data = data + chunk;
     },
     onEnd: () => {
-      saveAs(new Blob([data], { type: 'text/tab-separated-values' }), fileName);
+      if (tar) {
+        tar.append('output.txt', data);
+      } else {
+        saveAs(
+          new Blob([data], { type: 'text/tab-separated-values' }),
+          fileName,
+        );
+      }
     },
   };
 }
@@ -98,17 +106,14 @@ function getRows(args) {
   }
 }
 
-export default function({
+function streamFile({
   columns,
   streamData,
-  shouldStream = supported,
-  fileName = 'file.txt',
   uniqueBy = '',
   sqon,
+  onData,
+  onEnd,
 }) {
-  const { onData, onEnd } = shouldStream
-    ? streamMethods(fileName)
-    : noStreamMethods(fileName);
   const columnsShowing = columns.filter(c => c.show);
   const data = columnsShowing.map(column => column.Header).join('\t');
   onData(data + '\n');
@@ -133,4 +138,35 @@ export default function({
     },
     onEnd,
   });
+}
+
+export default async function({
+  streamData,
+  shouldStream = supported,
+  files = [],
+  fileName = 'files.tar',
+}) {
+  if (!files.length) {
+    console.warn('no files defined to download');
+    return;
+  }
+
+  const tar = files.length > 1 && new Tar(); // if multiple files, lets zip em up!
+
+  const callBacks =
+    shouldStream && files.length === 1 ? streamMethods : noStreamMethods; // we can't zip and stream the download
+
+  await Promise.all(
+    files.map((file, i) =>
+      streamFile({
+        streamData,
+        ...file,
+        ...callBacks(file.fileName || `file-${i + 1}.txt`, tar),
+      }),
+    ),
+  );
+
+  if (tar) {
+    saveAs(new Blob([tar.out], { type: 'application/gzip' }), fileName);
+  }
 }

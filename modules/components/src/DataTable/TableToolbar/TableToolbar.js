@@ -104,7 +104,10 @@ const TableToolbar = ({
           <button
             style={{ display: 'flex', cursor: 'pointer' }}
             onClick={() => {
-              saveTSV({ columns: columns.filter(c => c.show), streamData });
+              saveTSV({
+                files: [{ columns: columns.filter(c => c.show) }],
+                streamData,
+              });
             }}
           >
             <div style={{ minHeight: 16 }}>Export TSV</div>
