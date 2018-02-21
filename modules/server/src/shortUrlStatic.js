@@ -26,7 +26,7 @@ export default async (req, res) => {
             <meta property="og:image" content={content['og:image']} />
           </head>
           <body>
-            <script>window.location.href = {content.longUrl}</script>
+            <script>window.location.href = "{content.longUrl}"</script>
           </body>
         </html>
       );
