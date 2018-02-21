@@ -1,7 +1,26 @@
 import { omit } from 'lodash';
 import React from 'react';
+import { injectGlobal } from 'emotion';
 import State from '../State';
-import './Input.css';
+
+injectGlobal`
+  .inputWrapper {
+    border: solid 2px lightgrey;
+    padding: 5px;
+  }
+
+  .inputWrapper.focused {
+    box-shadow: 0px 0px 10px skyblue;
+  }
+
+  .inputWrapper input:focus {
+    outline: none;
+  } 
+
+  .inputWrapper .inputIcon {
+    color: lightgrey;
+  }
+`;
 
 export default props => (
   <State

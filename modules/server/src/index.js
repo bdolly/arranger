@@ -13,6 +13,7 @@ import watchGit from './watchGit';
 import { getProjects } from './utils/projects';
 import startProject from './startProject';
 import { PORT, ES_HOST, PROJECT_ID } from './utils/config';
+import shortUrlStatic from './shortUrlStatic';
 
 let main = async ({ io, app }) => {
   sockets({ io });
@@ -29,6 +30,8 @@ let main = async ({ io, app }) => {
   if (PROJECT_ID && ES_HOST) {
     startSingleProject({ io, app });
   }
+
+  app.get('/s/:shortUrl', shortUrlStatic);
 };
 
 let startSingleProject = async ({ app, io }) => {
