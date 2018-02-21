@@ -19,9 +19,14 @@ export default async (req, res) => {
         <html>
           <head>
             <meta property="og:title" content={content['og:title']} />
+            <meta
+              property="og:description"
+              content={content['og:description']}
+            />
+            <meta property="og:image" content={content['og:image']} />
           </head>
           <body>
-            <script>window.location.href = content.longUrl</script>
+            <script>window.location.href = {content.longUrl}</script>
           </body>
         </html>
       );
