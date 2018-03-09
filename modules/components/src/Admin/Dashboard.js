@@ -4,6 +4,7 @@ import { debounce, startCase } from 'lodash';
 import io from 'socket.io-client';
 import { BrowserRouter, Route, Link, Redirect, Switch } from 'react-router-dom';
 import convert from 'convert-units';
+import ReactGridLayout from 'react-grid-layout';
 
 // TODO: importing this causes "multiple versions" of graphql to be loaded and throw error
 // import GraphiQL from 'graphiql';
@@ -914,9 +915,62 @@ class Dashboard extends React.Component {
                                   ).name
                               }
                               render={columnsState => (
-                                <EditColumns
-                                  handleChange={columnsState.update}
-                                  {...columnsState}
+                                <State
+                                  initial={{ mode: 'table' }}
+                                  render={({ update, mode }) => (
+                                    <div>
+                                      <div
+                                        onClick={() =>
+                                          update({
+                                            mode:
+                                              mode === 'table'
+                                                ? 'preview'
+                                                : 'table',
+                                          })
+                                        }
+                                      >
+                                        {mode === 'table' ? 'preview' : 'table'}
+                                      </div>
+                                      {mode === 'table' ? (
+                                        <EditColumns
+                                          handleChange={columnsState.update}
+                                          {...columnsState}
+                                        />
+                                      ) : (
+                                        <div>
+                                          <ReactGridLayout
+                                            className="layout"
+                                            layout={columnsState.state.columns
+                                              .filter(x => x.canChangeShow)
+                                              .map((x, i) => ({
+                                                i: x.field,
+                                                x: i,
+                                                y: 0,
+                                                w: 1,
+                                                h: 1,
+                                              }))}
+                                            cols={
+                                              columnsState.state.columns.filter(
+                                                x => x.canChangeShow,
+                                              ).length
+                                            }
+                                            width={1200}
+                                          >
+                                            {columnsState.state.columns
+                                              .filter(x => x.canChangeShow)
+                                              .map(x => (
+                                                <div
+                                                  key={x.field}
+                                                  className="cellbox"
+                                                >
+                                                  {x.field}
+                                                </div>
+                                              ))}
+                                          </ReactGridLayout>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 />
                               )}
                             />
