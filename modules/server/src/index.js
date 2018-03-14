@@ -83,33 +83,32 @@ export default ({ projectId = PROJECT_ID, esHost = ES_HOST } = {}) => {
 
   let http = Server(app);
   let io = socketIO(http);
+  let arranger = express.Router();
+  let status = 'off';
 
   let server = {
     app,
     io,
     http,
-    status: 'off',
+    arranger,
+    status: () => status,
     listen(
       port = PORT,
       cb = () => {
         rainbow(`⚡️ Listening on port ${port} ⚡️`);
       },
     ) {
-      this.http.listen(port, async () => {
-        await main({ io, app, projectId, esHost, port });
-        this.status = 'on';
+      http.listen(port, async () => {
+        await main({ io, app: arranger, projectId, esHost, port });
+        status = 'on';
         cb();
       });
     },
     close(cb = () => {}) {
-      if (this.http) {
-        this.http.close(() => {
-          this.status = 'off';
-          cb();
-        });
-      } else {
-        throw '❗️ cannot close server that has not been started ❗️';
-      }
+      http.close(() => {
+        status = 'off';
+        cb();
+      });
     },
   };
 

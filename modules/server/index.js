@@ -8,5 +8,6 @@ require('@babel/register')({
   ],
 });
 
-let server = require('./src/index').default();
-server.listen();
+let { app, arranger, listen } = require('./src/index').default();
+app.use(arranger);
+listen();
