@@ -63,7 +63,11 @@ export default class extends Component {
       });
 
       const config = data[graphqlField].columnsState.state;
-      let { data: { [this.props.graphqlField]: { extended } } } = await api({
+      let {
+        data: {
+          [this.props.graphqlField]: { extended },
+        },
+      } = await api({
         endpoint: `/${this.props.projectId}/graphql`,
         body: {
           query: `
@@ -104,7 +108,6 @@ export default class extends Component {
       `,
       },
     });
-    console.log(data);
     this.setState({
       config: data.saveColumnsState.state,
     });

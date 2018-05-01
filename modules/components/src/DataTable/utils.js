@@ -15,7 +15,9 @@ export function normalizeColumns(columns = [], customTypes) {
     ...columnTypes,
     ...customTypes,
   };
-  return columns.map(function(column) {
+  console.log(customTypes);
+  console.log(columns);
+  const normalizedColumns = columns.map(function(column) {
     return {
       ...column,
       show: typeof column.show === 'boolean' ? column.show : true,
@@ -26,6 +28,8 @@ export function normalizeColumns(columns = [], customTypes) {
       ...(!column.accessor && !column.id ? { id: column.field } : {}),
     };
   });
+  console.log(normalizedColumns);
+  return normalizedColumns;
 }
 
 export const withNormalizedColumns = withProps(

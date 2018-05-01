@@ -56,6 +56,7 @@ class DataTable extends React.Component {
 
     this.setState({ loading: true, lastState: state });
 
+    console.log(state.sorted);
     fetchData?.({
       config,
       sqon,
@@ -125,6 +126,7 @@ class DataTable extends React.Component {
     const { columns, keyField, defaultSorted } = config;
     const { data, selectedTableRows, pages, loading } = this.state;
 
+    console.log(columns);
     const fetchFromServerProps = {
       pages,
       loading: propsLoading !== null ? propsLoading : loading,
@@ -141,6 +143,8 @@ class DataTable extends React.Component {
       keyField,
     };
 
+    console.log('defaultSorted');
+    console.log(defaultSorted);
     return (
       <ReactTable
         minRows={0}

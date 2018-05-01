@@ -10,6 +10,7 @@ const Table = ({
   sqon,
   fieldTypesForFilter = ['text', 'keyword'],
   api,
+  tableDidMount = () => {},
   ...props
 }) => {
   return (
@@ -18,6 +19,8 @@ const Table = ({
       graphqlField={graphqlField}
       api={api}
       render={columnState => {
+        console.log('columnState');
+        console.log(columnState);
         return (
           <DataTable
             {...{ ...props, api }}
@@ -26,6 +29,10 @@ const Table = ({
             config={{
               ...columnState.state,
               type: graphqlField,
+            }}
+            didMount={props => {
+              console.log('yeahhhhh???');
+              console.log(props.config.defaultSorted);
             }}
             fetchData={fetchData(projectId)}
             onColumnsChange={columnState.toggle}
