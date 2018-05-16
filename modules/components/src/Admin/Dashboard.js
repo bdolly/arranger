@@ -5,8 +5,8 @@ import { BrowserRouter, Route, Link, Redirect, Switch } from 'react-router-dom';
 import convert from 'convert-units';
 
 // TODO: importing this causes "multiple versions" of graphql to be loaded and throw error
-// import GraphiQL from 'graphiql';
-// import 'graphiql/graphiql.css';
+import GraphiQL from 'graphiql';
+import 'graphiql/graphiql.css';
 
 import CaretDownIcon from 'react-icons/lib/fa/caret-down';
 import CaretUpIcon from 'react-icons/lib/fa/caret-up';
@@ -371,7 +371,7 @@ class Dashboard extends React.Component {
       body: {
         eshost: this.state.eshost,
         index: this.state.newTypeIndex,
-        name: this.state.newTypeName,
+        name: this.state.newTypeAlias || this.state.newTypeName,
       },
     });
 
@@ -390,6 +390,7 @@ class Dashboard extends React.Component {
         typesTotal: total,
         newTypeIndex: '',
         newTypeName: '',
+        newTypeAlias: '',
         error: null,
       });
     }
@@ -522,35 +523,30 @@ class Dashboard extends React.Component {
           <Switch>
             <Route
               path="/graphiql/:projectId"
-              render={({
-                match: {
-                  params: { projectId },
-                },
-              }) => (
+              render={({ match: { params: { projectId } } }) => (
                 <Component
                   initialState={{ projectId }}
                   shouldUpdate={({ state }) => state.projectId !== projectId}
-                  render={
-                    () =>
-                      `Ensure that there is only one instance of "graphql" in the node_modules
-                    directory. If different versions of "graphql" are the dependencies of other
-                    relied on modules, use "resolutions" to ensure only one version is installed.
+                  render={() => (
+                    //   `Ensure that there is only one instance of "graphql" in the node_modules
+                    // directory. If different versions of "graphql" are the dependencies of other
+                    // relied on modules, use "resolutions" to ensure only one version is installed.
 
-                    https://yarnpkg.com/en/docs/selective-version-resolutions
+                    // https://yarnpkg.com/en/docs/selective-version-resolutions
 
-                    Duplicate "graphql" modules cannot be used at the same time since different
-                    versions may have different capabilities and behavior. The data from one
-                    version used in the function from another could produce confusing and
-                    spurious results.`
-                    // <GraphiQL
-                    //   fetcher={body =>
-                    //     api({
-                    //       endpoint: `/${match.params.projectId}/graphql`,
-                    //       body,
-                    //     })
-                    //   }
-                    // />
-                  }
+                    // Duplicate "graphql" modules cannot be used at the same time since different
+                    // versions may have different capabilities and behavior. The data from one
+                    // version used in the function from another could produce confusing and
+                    // spurious results.`
+                    <GraphiQL
+                      fetcher={body =>
+                        api({
+                          endpoint: `/${match.params.projectId}/graphql`,
+                          body,
+                        })
+                      }
+                    />
+                  )}
                 />
               )}
             />
@@ -572,9 +568,7 @@ class Dashboard extends React.Component {
               exact
               path={'/:id'}
               render={({
-                match: {
-                  params: { id: projectId },
-                },
+                match: { params: { id: projectId } },
                 history,
                 location,
               }) => (
@@ -613,9 +607,14 @@ class Dashboard extends React.Component {
                         <input
                           placeholder="Type name"
                           value={this.state.newTypeName}
-                          onChange={e =>
-                            this.setState({ newTypeName: e.target.value })
-                          }
+                          onChange={e => {
+                            if (e.target.value.includes('-')) {
+                              this.setState({
+                                newTypeAlias: e.target.value.replace(/-/g, '_'),
+                              });
+                            }
+                            this.setState({ newTypeName: e.target.value });
+                          }}
                         />
                       </div>
                       <div>
@@ -637,9 +636,7 @@ class Dashboard extends React.Component {
               exact
               path={'/:projectId/:index'}
               render={({
-                match: {
-                  params: { projectId, index },
-                },
+                match: { params: { projectId, index } },
                 history,
                 location,
                 graphqlField = projects
