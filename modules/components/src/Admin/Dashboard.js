@@ -528,20 +528,10 @@ class Dashboard extends React.Component {
                   initialState={{ projectId }}
                   shouldUpdate={({ state }) => state.projectId !== projectId}
                   render={() => (
-                    //   `Ensure that there is only one instance of "graphql" in the node_modules
-                    // directory. If different versions of "graphql" are the dependencies of other
-                    // relied on modules, use "resolutions" to ensure only one version is installed.
-
-                    // https://yarnpkg.com/en/docs/selective-version-resolutions
-
-                    // Duplicate "graphql" modules cannot be used at the same time since different
-                    // versions may have different capabilities and behavior. The data from one
-                    // version used in the function from another could produce confusing and
-                    // spurious results.`
                     <GraphiQL
                       fetcher={body =>
                         api({
-                          endpoint: `/${match.params.projectId}/graphql`,
+                          endpoint: `/${projectId}/graphql`,
                           body,
                         })
                       }
