@@ -38,6 +38,7 @@ export default ({
           {
             active: false,
             displayName: 'ids',
+            category: 'keyword',
             field: 'ids',
             isArray: true,
             type: 'keyword',
