@@ -3,7 +3,7 @@ import startProject from '../startProject';
 export default ({ io }) => async (req, res) => {
   let { es } = req.context;
   let { id } = req.params;
-
+  debugger
   try {
     startProject({ es, id, io });
   } catch (err) {

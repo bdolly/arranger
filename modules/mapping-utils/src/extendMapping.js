@@ -6,6 +6,7 @@ export const extendFields = fields =>
     field,
     type,
     displayName: startCase(field.replace(/\./g, ' ')),
+    category: '',
     active: false,
     isArray: false,
     primaryKey: false,
