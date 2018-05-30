@@ -50,11 +50,11 @@ export default async function startProjectApp({ es, id, io }) {
   id = id.toLowerCase();
 
   const types = await getTypes({ id, es });
-  debugger
+  
   if (!types) return;
   let hits = mapHits(types);
   let mappings = await fetchMappings({ es, types: hits });
-  debugger
+  
   let extended = await Promise.all(
     hits.map(async type => {
       const indexPrefix = getIndexPrefix({ projectId: id, index: type.index });
@@ -77,7 +77,7 @@ export default async function startProjectApp({ es, id, io }) {
       return { ...type, indexPrefix, fields };
     }),
   );
-  debugger
+  
   let typesWithMappings = addMappingsToTypes({
     types: extended.map(type => {
       return [
@@ -94,9 +94,9 @@ export default async function startProjectApp({ es, id, io }) {
     }),
     mappings: mappings.map(m => m.mapping),
   });
-  debugger
+  
   let schema = makeSchema({ types: typesWithMappings, rootTypes: [] });
-  debugger
+  
   let mockSchema = makeSchema({
     types: typesWithMappings,
     rootTypes: [],

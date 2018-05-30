@@ -756,7 +756,7 @@ class Dashboard extends React.Component {
                                       }/update`,
                                       body: { eshost, key, value },
                                     });
-                                    debugger
+                                    
                                     this.setState({
                                       fields: r.fields,
                                       activeField: r.fields.find(
